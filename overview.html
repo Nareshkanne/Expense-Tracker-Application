@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker Overview</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #EAF4FC;
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: #0D3B66;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar h2 {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            padding-right: 20px;
+            align-items: center;
+        }
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        .profile-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #4CAF50;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 16px;
+            color: white;
+        }
+
+        /* Main Content */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* Summary Cards */
+        .summary-cards {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+            width: 100%;
+            flex-wrap: wrap;
+        }
+        .summary-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 250px;
+            text-align: center;
+        }
+        .summary-card h3 {
+            margin: 10px 0;
+            color: #0D3B66;
+        }
+        .summary-card p {
+            font-size: 24px;
+            font-weight: bold;
+            color: #0099cc;
+            margin: 0;
+        }
+
+        /* Charts Section */
+        .charts-section {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            width: 100%;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .chart-container {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            height: 300px;
+            display: flex; /* Added for centering content */
+            justify-content: center;
+            align-items: center;
+            position: relative; /* Make sure the container is a positioning context */
+        }
+        .chart-container canvas{
+           width: 100%;
+           height: 100%;
+        }
+
+        /* Tables Section */
+        .tables-section {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            width: 100%;
+            flex-wrap: wrap;
+        }
+        .data-table {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 400px;
+        }
+        .data-table h3 {
+            margin: 10px 0;
+            color: #0D3B66;
+            text-align: center;
+        }
+        .data-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .data-table th, .data-table td {
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+        .data-table th {
+            background-color: #f0f0f0;
+        }
+        .data-table tbody tr:hover {
+            background-color: #f5f5f5;
+        }
+
+         /* Add Revenue/Expense Buttons */
+        .button-container {
+            display: flex;
+            justify-content: center; /* Center the buttons horizontally */
+            margin-top: 20px; /* Add some space above the buttons */
+            width: 100%;
+        }
+        .add-button {
+            background-color: #4CAF50; /* Green */
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 0 10px; /* Add horizontal margin between buttons */
+        }
+
+        .add-button:hover {
+            background-color: #367c39; /* Darker green */
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 1200px) {
+            .charts-section, .tables-section {
+                flex-direction: column;
+                align-items: center;
+            }
+            .summary-cards {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+        @media (max-width: 768px){
+           .navbar h2{
+             font-size: 18px;
+           }
+           .nav-links a{
+            font-size: 14px;
+           }
+           .summary-card{
+             width: 90%;
+           }
+           .chart-container{
+            width: 90%;
+            height: auto;
+           }
+           .data-table{
+             width: 90%;
+           }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h2>Expense Tracker</h2>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="ex">Expenses</a>
+            <a href="rev">Revenue</a>
+            <a href="out">Logout</a>
+            <a href="pro"><div class="profile-icon"></div></a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="summary-cards">
+            <div class="summary-card">
+                <h3>Total Expenses</h3>
+                <p id="total-expenses">$0</p>
+            </div>
+            <div class="summary-card">
+                <h3>Total Revenue</h3>
+                <p id="total-revenue">$0</p>
+            </div>
+            <div class="summary-card">
+                <h3>Net Balance</h3>
+                <p id="net-balance">$0</p>
+            </div>
+        </div>
+
+        <div class="charts-section">
+            <div class="chart-container">
+                <canvas id="expense-category-chart"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="revenue-source-chart"></canvas>
+            </div>
+        </div>
+
+        <div class="tables-section">
+            <div class="data-table">
+                <h3>Expense Details</h3>
+                <table id="expense-table">
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th>Date</th>
+                            <th>Amount</th>
+                            <th>Category</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+            <div class="data-table">
+                <h3>Revenue Details</h3>
+                <table id="revenue-table">
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th>Date</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="button-container">
+            <button class="add-button" id="add-expense-button">Add Expense</button>
+            <button class="add-button" id="add-revenue-button">Add Revenue</button>
+        </div>
+    </div>
+
+    <script>
+        // Get data from localStorage
+        let expenses = JSON.parse(localStorage.getItem('expenses')) || [
+            { id: 1, description: "transport", date: "2025-03-01", amount: 230, month: "2025-Mar", category: "trans" },
+            { id: 2, description: "shopping", date: "2025-02-20", amount: 150, month: "2025-Feb", category: "shop" },
+            { id: 3, description: "entertainment", date: "2025-01-15", amount: 50, month: "2025-Jan", category: "enter" },
+            { id: 4, description: "rent", date: "2025-03-10", amount: 120, month: "2025-Mar", category: "rent" },
+            { id: 5, description: "food", date: "2025-02-25", amount: 300, month: "2025-Feb", category: "foo" },
+            { id: 6, description: "others", date: "2025-01-30", amount: 90, month: "2025-Jan", category: "oth" },
+            { id: 7, description: "pizza", date: "2025-02-14", amount: 20, month: "2025-Feb", category: "foo" },
+            { id: 8, description: "burger", date: "2025-02-14", amount: 15, month: "2025-Feb", category: "foo" },
+        ];
+
+        let revenues = JSON.parse(localStorage.getItem('revenues')) || [
+            { id: 1, description: "Salary", date: "2025-01-01", amount: 60, month: "2025-01" },
+            { id: 2, description: "Bonus", date: "2025-02-15", amount: 50, month: "2025-02" },
+            { id: 3, description: "Freelance", date: "2025-03-20", amount: 70, month: "2025-03" },
+        ];
+
+        let user = JSON.parse(localStorage.getItem('user')) || { name: "User Name", email: "user@example.com", location: "City, Country" };
+
+        // Function to save data to localStorage
+        function saveData() {
+            localStorage.setItem('expenses', JSON.stringify(expenses));
+            localStorage.setItem('revenues', JSON.stringify(revenues));
+            localStorage.setItem('user', JSON.stringify(user));
+        }
+
+        // Calculate total expenses
+        function calculateTotalExpenses() {
+            return expenses.reduce((acc, expense) => acc + expense.amount, 0);
+        }
+
+        // Calculate total revenue
+        function calculateTotalRevenue() {
+            return revenues.reduce((acc, revenue) => acc + revenue.amount, 0);
+        }
+
+        // Calculate net balance
+        function calculateNetBalance() {
+            return calculateTotalRevenue() - calculateTotalExpenses();
+        }
+
+        // Render summary cards
+        function renderSummaryCards() {
+            document.getElementById('total-expenses').textContent = `$${calculateTotalExpenses()}`;
+            document.getElementById('total-revenue').textContent = `$${calculateTotalRevenue()}`;
+            document.getElementById('net-balance').textContent = `$${calculateNetBalance()}`;
+        }
+
+        // Prepare data for charts
+        function getExpenseCategoryData() {
+            const categoryTotals = {};
+            expenses.forEach(expense => {
+                const category = expense.category;
+                categoryTotals[category] = (categoryTotals[category] || 0) + expense.amount;
+            });
+            return {
+                labels: Object.keys(categoryTotals),
+                data: Object.values(categoryTotals),
+            };
+        }
+
+        function getRevenueSourceData() {
+          const sourceTotals = {};
+          revenues.forEach(revenue => {
+            const description = revenue.description;
+            sourceTotals[description] = (sourceTotals[description] || 0) + revenue.amount;
+          });
+          return {
+            labels: Object.keys(sourceTotals),
+            data: Object.values(sourceTotals),
+          };
+        }
+
+        // Render charts
+        function renderCharts() {
+            const expenseCtx = document.getElementById('expense-category-chart').getContext('2d');
+            const revenueCtx = document.getElementById('revenue-source-chart').getContext('2d');
+
+            new Chart(expenseCtx, {
+                type: 'pie',
+                data: {
+                    labels: getExpenseCategoryData().labels,
+                    datasets: [{
+                        label: 'Expense Categories',
+                        data: getExpenseCategoryData().data,
+                        backgroundColor: [
+                            '#FF6384',
+                            '#36A2EB',
+                            '#FFCE56',
+                            '#4BC0C0',
+                            '#9966FF',
+                            '#FF8E72',
+                            '#64B5F6'
+                        ],
+                    }],
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Expense Categories',
+                            font: {
+                              size: 16
+                            }
+                        }
+                    }
+                }
+            });
+
+            new Chart(revenueCtx, {
+              type: 'pie',
+              data: {
+                labels: getRevenueSourceData().labels,
+                datasets: [{
+                  label: 'Revenue Sources',
+                  data: getRevenueSourceData().data,
+                  backgroundColor: [
+                    '#4CAF50',
+                    '#FFC107',
+                    '#2196F3',
+                    '#9C27B0',
+                    '#00BCD4',
+                  ],
+                }],
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    },
+                    title: {
+                        display: true,
+                        text: 'Revenue Sources',
+                        font: {
+                            size: 16
+                        }
+                    }
+                }
+              },
+            });
+        }
+
+        // Render tables
+        function renderTables() {
+            const expenseTable = document.querySelector('#expense-table tbody');
+            const revenueTable = document.querySelector('#revenue-table tbody');
+
+            expenses.forEach(expense => {
+                const row = expenseTable.insertRow();
+                const descriptionCell = row.insertCell();
+                const dateCell = row.insertCell();
+                const amountCell = row.insertCell();
+                const categoryCell = row.insertCell();
+
+                descriptionCell.textContent = expense.description;
+                dateCell.textContent = expense.date;
+                amountCell.textContent = `$${expense.amount}`;
+                categoryCell.textContent = expense.category;
+            });
+
+            revenues.forEach(revenue => {
+                const row = revenueTable.insertRow();
+                const descriptionCell = row.insertCell();
+                const dateCell = row.insertCell();
+                const amountCell = row.insertCell();
+
+                descriptionCell.textContent = revenue.description;
+                dateCell.textContent = revenue.date;
+                amountCell.textContent = `$${revenue.amount}`;
+            });
+        }
+
+        // Add event listeners for the add expense and add revenue buttons
+        document.getElementById('add-expense-button').addEventListener('click', () => {
+            const newDescription = prompt("Enter expense description:");
+            const newDate = prompt("Enter expense date (YYYY-MM-DD):");
+            const newAmount = parseFloat(prompt("Enter expense amount:"));
+            const newCategory = prompt("Enter expense category:");
+
+            if (newDescription && newDate && !isNaN(newAmount) && newCategory) {
+                const newExpense = {
+                    id: expenses.length + 1,
+                    description: newDescription,
+                    date: newDate,
+                    amount: newAmount,
+                    category: newCategory,
+                };
+                expenses.push(newExpense);
+                saveData();
+                renderSummaryCards();
+                renderCharts();
+                renderTables();
+                alert("Expense added successfully!");
+            } else {
+                alert("Invalid input. Please provide valid information.");
+            }
+        });
+
+        document.getElementById('add-revenue-button').addEventListener('click', () => {
+            const newDescription = prompt("Enter revenue description:");
+            const newDate = prompt("Enter revenue date (YYYY-MM-DD):");
+            const newAmount = parseFloat(prompt("Enter revenue amount:"));
+
+            if (newDescription && newDate && !isNaN(newAmount)) {
+                const newRevenue = {
+                    id: revenues.length + 1,
+                    description: newDescription,
+                    date: newDate,
+                    amount: newAmount,
+                };
+                revenues.push(newRevenue);
+                saveData();
+                renderSummaryCards();
+                renderCharts();
+                renderTables();
+                alert("Revenue added successfully!");
+            } else {
+                alert("Invalid input. Please provide valid information.");
+            }
+        });
+
+        // Initial render
+        renderSummaryCards();
+        renderCharts();
+        renderTables();
+    </script>
+</body>
+</html>

@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width-width, initial-scale=1.0">
+    <title>Expense Tracker Dashboard</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #EAF4FC;
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: #0D3B66;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between; /* Pushes items to the edges */
+            align-items: center;
+        }
+        .navbar h2 {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            padding-right: 20px;
+            align-items: center;
+        }
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        /* Profile Icon */
+        .profile-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #4CAF50;  /* Green background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            color: white;          /* White text color */
+            margin-left: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .profile-icon:hover {
+            background-color: #45a049;  /* Darker green on hover */
+        }
+
+        /* Filters */
+        .filters {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        select {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        /* Expense List */
+        .expense-list {
+            width: 60%;
+            margin: 20px auto;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .expense-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .expense-item:last-child {
+            border-bottom: none;
+        }
+        .expense-info {
+            flex-grow: 1;
+            margin-left: 10px;
+        }
+        .expense-amount {
+            font-weight: bold;
+            color: red;
+        }
+        .edit-btn, .delete-btn, .category-btn {
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 16px;
+            margin-left: 10px;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .pagination button {
+            margin: 5px;
+            padding: 10px 15px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: background-color 0.3s ease;
+            font-size: 18px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .pagination button:hover {
+            background-color: #0056b3;
+        }
+        .pagination button:disabled {
+            background-color: #e0e0e0;
+            color: #9e9e9e;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        .pagination button:disabled:hover {
+            background-color: #e0e0e0;
+        }
+        #pageIndicator {
+            margin: 0 10px;
+            font-size: 18px;
+            color: #555;
+            align-self: center;
+        }
+
+        /* Category Dropdown Styling */
+        .category-dropdown {
+            padding: 8px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
+        }
+
+        /* Total Expense */
+        .total-expense {
+            text-align: center;
+            font-size: 30px;
+            margin: 20px 0;
+            color: #0099cc;
+        }
+
+        .delete-month-btn {
+            margin: 20px auto;
+            padding: 8px 15px;
+            border: none;
+            background: #dc3545;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+            display: block;
+            width: fit-content;
+        }
+
+        .delete-month-btn:hover {
+            background: #c82333;
+        }
+
+        /* CSS arrows */
+        .pagination button#prevPage::before {
+            content: "«";
+            margin-right: 5px;
+        }
+        .pagination button#nextPage::after {
+            content: "»";
+            margin-left: 5px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <h2>Expense Tracker</h2>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="rev">Revenue</a>
+            <a href="ov">Overview</a>
+            <a href="out">Logout</a>
+            <a href="profile.html"><div class="profile-icon" id="profile-icon"></div></a> </div>
+    </div>
+
+    <div class="filters">
+        <select id="month-dropdown" onchange="filterByMonth()">
+            <option value="">Select Month</option>
+        </select>
+
+        <select id="category-filter" onchange="handleCategoryChange()">
+            <option value="">Select Category</option>
+            <option value="trans">Transport</option>
+            <option value="shop">Shopping</option>
+            <option value="enter">Entertainment</option>
+            <option value="rent">Rent</option>
+            <option value="foo">Food</option>
+            <option value="oth">Others</option>
+        </select>
+    </div>
+
+    <div class="total-expense">
+        Total Expenses: <br>
+        <span id="total-expense-amount">$0</span>
+    </div>
+
+    <div style="text-align: center; margin-top: 20px;">
+        <button onclick="addExpense()">Add Expense</button>
+        <button onclick="addMonth()">Add Month</button>
+    </div>
+
+    <div class="expense-list" id="expense-list"></div>
+
+    <button class="delete-month-btn" onclick="deleteMonth()">Delete Month</button>
+
+    <div class="pagination">
+        <button id="prevPage" onclick="changePage(-1)" disabled></button>
+        <span id="pageIndicator">Page 1</span>
+        <button id="nextPage" onclick="changePage(1)"></button>
+    </div>
+
+    <script>
+        let expenses = JSON.parse(localStorage.getItem('expenses')) || [
+            { id: 1, description: "transport", date: "2025-03-01", amount: 230, month: "2025-Mar", category: "trans" },
+            { id: 2, description: "shopping", date: "2025-02-20", amount: 150, month: "2025-Feb", category: "shop" },
+            { id: 3, description: "entertainment", date: "2025-01-15", amount: 50, month: "2025-Jan", category: "enter" },
+            { id: 4, description: "rent", date: "2025-03-10", amount: 120, month: "2025-Mar", category: "rent" },
+            { id: 5, description: "food", date: "2025-02-25", amount: 300, month: "2025-Feb", category: "foo" },
+            { id: 6, description: "others", date: "2025-01-30", amount: 90, month: "2025-Jan", category: "oth" },
+            { id: 7, description: "pizza", date: "2025-02-14", amount: 20, month: "2025-Feb", category: "foo" },
+            { id: 8, description: "burger", date: "2025-02-14", amount: 15, month: "2025-Feb", category: "foo" },
+        ];
+        let currentPage = 1;
+        const itemsPerPage = 6;
+        let filteredExpenses = expenses;
+        let selectedMonth = '';
+        let months = JSON.parse(localStorage.getItem('months')) || ["2025-Jan", "2025-Feb", "2025-Mar"];
+
+        function saveExpenses() {
+            localStorage.setItem('expenses', JSON.stringify(expenses));
+        }
+
+        function saveMonths() {
+            localStorage.setItem('months', JSON.stringify(months));
+        }
+
+        function populateMonths() {
+            const monthDropdown = document.getElementById("month-dropdown");
+            monthDropdown.innerHTML = '<option value="">Select Month</option>';
+            months.forEach(month => {
+                const option = document.createElement("option");
+                option.value = month;
+                option.text = month;
+                monthDropdown.appendChild(option);
+            });
+        }
+
+        function displayExpenses() {
+            const expenseList = document.getElementById("expense-list");
+            expenseList.innerHTML = "";
+
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const paginatedExpenses = filteredExpenses.slice(start, end);
+
+            paginatedExpenses.forEach(expense => {
+                const div = document.createElement("div");
+                div.classList.add("expense-item");
+                div.innerHTML = `
+                    <div class="expense-info">
+                        <strong>${expense.description}</strong><br>
+                        <small>${expense.date}</small><br>
+                        <small>Category: ${expense.category}</small>
+                    </div>
+                    <div class="expense-amount">$-${expense.amount}</div>
+                    <div>
+                        <button class="category-btn" data-category="${expense.category}">View Category</button>
+                        <button class="edit-btn" data-id="${expense.id}">✏️</button>
+                        <button class="delete-btn" data-id="${expense.id}">🗑️</button>
+                    </div>
+                `;
+                expenseList.appendChild(div);
+            });
+
+            // Add event listeners for edit, delete, and category buttons
+            document.querySelectorAll('.edit-btn').forEach(button => {
+                button.addEventListener('click', editExpense);
+            });
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', deleteExpense);
+            });
+            document.querySelectorAll('.category-btn').forEach(button => {
+                button.addEventListener('click', viewCategory);
+            });
+
+            document.getElementById("prevPage").disabled = currentPage === 1;
+            document.getElementById("nextPage").disabled = end >= filteredExpenses.length;
+            document.getElementById("pageIndicator").innerText = `Page ${currentPage}`;
+            updateTotalExpense();
+        }
+
+        function changePage(direction) {
+            currentPage += direction;
+            displayExpenses();
+        }
+
+        function filterByMonth() {
+            selectedMonth = document.getElementById("month-dropdown").value;
+            filteredExpenses = selectedMonth ? expenses.filter(e => e.month === selectedMonth) : expenses;
+            currentPage = 1;
+            displayExpenses();
+        }
+
+        function handleCategoryChange() {
+            const selectedCategory = document.getElementById("category-filter").value;
+            if (selectedCategory) {
+                filteredExpenses = expenses.filter(e => e.category === selectedCategory);
+                currentPage = 1;
+                displayExpenses();
+            } else {
+                filteredExpenses = selectedMonth ? expenses.filter(e => e.month === selectedMonth) : expenses;
+                currentPage = 1;
+                displayExpenses();
+            }
+        }
+
+        function viewCategory(event) {
+            const category = event.target.dataset.category;
+            document.getElementById("category-filter").value = category;
+            handleCategoryChange();
+        }
+
+        function editExpense(event) {
+            const id = parseInt(event.target.dataset.id);
+            if (confirm("Do you want to edit this expense?")) {
+                const expenseToEdit = expenses.find(expense => expense.id === id);
+                if (expenseToEdit) {
+                    const newDescription = prompt("Enter new description:", expenseToEdit.description);
+                    const newDate = prompt("Enter new date:", expenseToEdit.date);
+                    const newAmount = parseFloat(prompt("Enter new amount:", expenseToEdit.amount));
+                    const newMonth = prompt("Enter new month:", expenseToEdit.month);
+                    const newCategory = prompt("Enter new category:", expenseToEdit.category);
+
+                    if (newDescription && newDate && !isNaN(newAmount) && newMonth && newCategory) {
+                        expenseToEdit.description = newDescription;
+                        expenseToEdit.date = newDate;
+                        expenseToEdit.amount = newAmount;
+                        expenseToEdit.month = newMonth;
+                        expenseToEdit.category = newCategory;
+                        saveExpenses();
+                        filterByMonth();
+                    } else {
+                        alert("Invalid input. Expense not modified.");
+                    }
+                }
+            }
+        }
+
+        function deleteExpense(event) {
+            const id = parseInt(event.target.dataset.id);
+            if (confirm("Do you want to delete this expense?")) {
+                expenses = expenses.filter(expense => expense.id !== id);
+                saveExpenses();
+                filterByMonth();
+            }
+        }
+
+        function addExpense() {
+            const newDescription = prompt("Enter description:");
+            const newDate = prompt("Enter date (YYYY-MM-DD):");
+            const newAmount = parseFloat(prompt("Enter amount:"));
+            const newMonth = prompt("Enter month (YYYY-Mon):");
+            const newCategory = prompt("Enter category:");
+
+            if (newDescription && newDate && !isNaN(newAmount) && newMonth && newCategory) {
+                const newId = expenses.length > 0 ? expenses[expenses.length - 1].id + 1 : 1;
+                const newExpense = {
+                    id: newId,
+                    description: newDescription,
+                    date: newDate,
+                    amount: newAmount,
+                    month: newMonth,
+                    category: newCategory
+                };
+                expenses.push(newExpense);
+                saveExpenses();
+                handleCategoryChange();
+            } else {
+                alert("Invalid input. Expense not added.");
+            }
+        }
+
+        function addMonth() {
+            const newMonth = prompt("Enter new month (YYYY-Mon):");
+            if (newMonth && !months.includes(newMonth)) {
+                months.push(newMonth);
+                saveMonths();
+                populateMonths();
+            }
+        }
+
+        function deleteMonth() {
+            const monthToDelete = document.getElementById("month-dropdown").value;
+            if (monthToDelete) {
+                if (confirm(`Are you sure you want to delete the month "${monthToDelete}"?`)) {
+                    months = months.filter(month => month !== monthToDelete);
+                    saveMonths();
+                    populateMonths();
+                    filterByMonth();
+                }
+            } else {
+                alert("Please select a month to delete.");
+            }
+        }
+
+        function updateTotalExpense() {
+            const total = filteredExpenses.reduce((acc, expense) => acc + expense.amount, 0);
+            document.getElementById("total-expense-amount").innerText = `$-${total}`;
+        }
+
+        // Add this JavaScript to make the profile icon redirect
+        const profileIcon = document.getElementById('profile-icon');
+
+        profileIcon.addEventListener('click', () => {
+            window.location.href = 'profile.html'; // Redirect to profile page
+        });
+
+
+
+        populateMonths();
+        displayExpenses();
+    </script>
+</body>
+</html>

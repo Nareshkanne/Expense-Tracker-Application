@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logout - Expense Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #eaf3ff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        .navbar {
+            background-color: #1a2a5e;
+            color: white;
+            padding: 15px 0px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .navbar h2 {
+            margin: 0;
+            font-size: 22px;
+        }
+        .btn-outline {
+            padding: 8px 15px;
+            border: 2px solid white;
+            background: transparent;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .btn-outline:hover {
+            background-color: white;
+            color: #1a2a5e;
+        }
+        .logout-container {
+            width: 400px;
+            margin-top: 80px;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .success-message {
+            background-color: #28a745;
+            color: white;
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .btn-primary {
+            background-color: #4267B2;
+            color: white;
+        }
+        .btn-secondary {
+            background-color: #17a2b8;
+            color: white;
+        }
+        .btn-outline-blue {
+            border: 2px solid #17a2b8;
+            color: #17a2b8;
+            background: white;
+        }
+        .btn:hover {
+            opacity: 0.85;
+        }
+        .footer-text {
+            margin-top: 20px;
+        }
+        .footer-text a {
+            color: #007bff;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <h2>Expense Tracker</h2>
+        <a href="/log">
+            <button class="btn-outline">Login</button>
+        </a>
+    </div>
+
+    <div class="logout-container">
+        <div class="success-message">
+            Logout Successful!
+            <button class="close-btn" onclick="this.parentElement.style.display='none'">&times;</button>
+        </div>
+        
+        <a href="/log">
+    <button class="btn btn-primary">Login Again</button>
+        </a>
+
+        <a href="/">
+            <button class="btn btn-secondary">Go to Home</button>
+        </a>
+        <a href="/reg">
+            <button class="btn btn-outline-blue">Create a New Account</button>
+        </a>
+
+        <p class="footer-text">Want to sign in? <a href="/log">Login</a></p>
+    </div>
+
+</body>
+</html>

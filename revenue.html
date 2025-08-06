@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #EAF4FC;
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: #0D3B66;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar h2 {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            padding-right: 20px;
+            align-items: center;
+        }
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        .profile-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #4CAF50;
+        }
+
+        /* Filters */
+        .filters {
+            text-align: center;
+            margin-top: 20px;
+        }
+        select {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        /* Total Revenue */
+        .total-revenue {
+            text-align: center;
+            font-size: 30px;
+            margin: 20px 0;
+            color: #0099cc;
+        }
+        .add-revenue-btn, .add-month-btn {
+            display: inline-block; /* Make buttons inline blocks */
+            margin: 10px 5px; /* Add some margin for spacing */
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .add-revenue-btn:hover, .add-month-btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* Revenue List */
+        .revenue-list {
+            width: 60%;
+            margin: 20px auto;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .revenue-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            background-color: #F2F9FF;
+            border-radius: 5px;
+            margin-bottom: 5px;
+        }
+        .revenue-icon {
+            font-size: 24px;
+        }
+        .revenue-info {
+            flex-grow: 1;
+            margin-left: 10px;
+        }
+        .revenue-amount {
+            font-weight: bold;
+            color: green;
+        }
+        .edit-btn, .delete-btn {
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 16px;
+            margin-left: 10px;
+        }
+
+        /* Pagination */
+        .pagination {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .pagination button {
+            padding: 8px 15px;
+            border: none;
+            margin: 5px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .pagination button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <h2>Expense Tracker</h2>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="ex">Expenses</a>
+            <a href="ov">Overview</a>
+            <a href="out">Logout</a>
+            <a href="pro"><div class="profile-icon"></div></a>
+        </div>
+    </div>     
+
+    <div class="filters">
+        <select id="month-dropdown" onchange="filterByMonth()">
+            <option value="">Select Month</option>
+            <option value="2025-01">2025-Jan</option>
+            <option value="2025-02">2025-Feb</option>
+            <option value="2025-03">2025-Mar</option>
+        </select>
+    </div>
+
+    <div class="total-revenue">
+        Total Revenues: <br>
+        <span id="total-revenue-amount">$180</span>
+    </div>
+    <div style="text-align: center;">
+        <button class="add-revenue-btn" onclick="addRevenue()">Add Revenue</button>
+        <button class="add-month-btn" onclick="addMonth()">Add Month</button>
+    </div>
+
+    <div class="revenue-list" id="revenue-list">
+    </div>
+
+    <div class="pagination" id="pagination">
+        <button id="prevPage" onclick="changePage(-1)" disabled>«</button>
+        <button id="currentPageButton">1</button>
+        <button id="nextPage" onclick="changePage(1)">»</button>
+    </div>
+
+    <script>
+        let revenues = JSON.parse(localStorage.getItem('revenues')) || [
+            { id: 1, description: "Salary", date: "2025-01-01", amount: 60, month: "2025-01" },
+            { id: 2, description: "Bonus", date: "2025-02-15", amount: 50, month: "2025-02" },
+            { id: 3, description: "Freelance", date: "2025-03-20", amount: 70, month: "2025-03" },
+        ];
+        let currentPage = 1;
+        const itemsPerPage = 2;
+        let filteredRevenues = revenues;
+        let selectedMonth = '';
+
+        function saveRevenues() {
+            localStorage.setItem('revenues', JSON.stringify(revenues));
+        }
+
+        function displayRevenues() {
+            const revenueList = document.getElementById("revenue-list");
+            revenueList.innerHTML = "";
+   
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const paginatedRevenues = filteredRevenues.slice(start, end);
+
+            paginatedRevenues.forEach(revenue => {
+                const div = document.createElement("div");
+                div.classList.add("revenue-item");
+                div.innerHTML = `
+                    <div class="revenue-icon">💰</div>
+                    <div class="revenue-info">
+                        <strong>${revenue.description}</strong><br>
+                        <small>${revenue.date}</small>
+                    </div>
+                    <div class="revenue-amount">$${revenue.amount}</div>
+                    <div>
+                        <button class="edit-btn" data-id="${revenue.id}">✏️</button>
+                        <button class="delete-btn" data-id="${revenue.id}">🗑️</button>
+                    </div>
+                `;
+                revenueList.appendChild(div);
+            });
+
+            // Add event listeners for edit and delete buttons
+            document.querySelectorAll('.edit-btn').forEach(button => {
+                button.addEventListener('click', editRevenue);
+            });
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', deleteRevenue);
+            });
+
+            document.getElementById("prevPage").disabled = currentPage === 1;
+            document.getElementById("nextPage").disabled = end >= filteredRevenues.length;
+            document.getElementById("currentPageButton").innerText = currentPage;
+            updateTotalRevenue();
+        }
+
+        function changePage(direction) {
+            currentPage += direction;
+            displayRevenues();
+        }
+
+        function filterByMonth() {
+            selectedMonth = document.getElementById("month-dropdown").value;
+            filteredRevenues = selectedMonth ? revenues.filter(r => r.month === selectedMonth) : revenues;
+            currentPage = 1;
+            displayRevenues();
+        }
+
+        function editRevenue(event) {
+            const id = parseInt(event.target.dataset.id);
+            if (confirm("Do you want to edit this revenue?")) {
+                const revenueToEdit = revenues.find(revenue => revenue.id === id);
+                if (revenueToEdit) {
+                    const newDescription = prompt("Enter new description:", revenueToEdit.description);
+                    const newDate = prompt("Enter new date (YYYY-MM-DD):", revenueToEdit.date);
+                    const newAmount = parseFloat(prompt("Enter new amount:", revenueToEdit.amount));
+                    const newMonth = prompt("Enter new month (YYYY-MM):", revenueToEdit.month);
+
+                    if (newDescription && newDate && !isNaN(newAmount) && newMonth) {
+                        revenueToEdit.description = newDescription;
+                        revenueToEdit.date = newDate;
+                        revenueToEdit.amount = newAmount;
+                        revenueToEdit.month = newMonth;
+                        saveRevenues();
+                        filterByMonth();
+                    } else {
+                        alert("Invalid input. Revenue not modified.");
+                    }
+                }
+            }
+        }
+
+        function deleteRevenue(event) {
+            const id = parseInt(event.target.dataset.id);
+            if (confirm("Do you want to delete this revenue?")) {
+                revenues = revenues.filter(revenue => revenue.id !== id);
+                saveRevenues();
+                filterByMonth();
+            }
+        }
+
+        function addRevenue() {
+            const newDescription = prompt("Enter description:");
+            const newDate = prompt("Enter date (YYYY-MM-DD):");
+            const newAmount = parseFloat(prompt("Enter amount:"));
+            const newMonth = prompt("Enter new month (YYYY-MM):");
+
+            if (newDescription && newDate && !isNaN(newAmount) && newMonth) {
+                const newId = revenues.length > 0 ? revenues[revenues.length - 1].id + 1 : 1;
+                const newRevenue = {
+                    id: newId,
+                    description: newDescription,
+                    date: newDate,
+                    amount: newAmount,
+                    month: newMonth
+                };
+                revenues.push(newRevenue);
+                saveRevenues();
+                filterByMonth();
+            } else {
+                alert("Invalid input. Revenue not added.");
+            }
+        }
+
+        function addMonth() {
+            const newMonth = prompt("Enter new month (YYYY-MM):");
+            if (newMonth) {
+                const monthDropdown = document.getElementById("month-dropdown");
+                const option = document.createElement("option");
+                option.value = newMonth;
+                option.text = newMonth;
+                monthDropdown.appendChild(option);
+            }
+        }
+
+        function updateTotalRevenue() {
+          const total = filteredRevenues.reduce((acc, revenue) => acc + revenue.amount, 0);
+          document.getElementById("total-revenue-amount").innerText = `$${total}`;
+        }
+
+        //Initial call
+        displayRevenues();
+    </script>
+</body>
+</html>

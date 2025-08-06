@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Page</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #EAF4FC;
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: #0D3B66;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar h2 {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            padding-right: 20px;
+            align-items: center;
+        }
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        /* Profile Section */
+        .profile-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 40px;
+            margin-top: 20px;
+        }
+
+        .profile-card {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background-color: #4CAF50;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 30px;
+            color: white;
+            margin: 0 auto 20px;
+        }
+
+        .profile-info h3 {
+            margin: 10px 0;
+            color: #0D3B66;
+            font-size: 24px;
+        }
+
+        .profile-info p {
+            font-size: 18px;
+            color: #555;
+            margin: 5px 0;
+        }
+
+        /* Edit Form */
+        .edit-form {
+            margin-top: 20px;
+        }
+
+        .edit-form input,
+        .edit-form button {
+            padding: 12px;
+            margin: 10px 0;
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .edit-form button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+
+        .edit-form button:hover {
+            background-color: #367c39;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .navbar h2 {
+                font-size: 18px;
+            }
+
+            .nav-links a {
+                font-size: 14px;
+            }
+
+            .profile-card {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h2>Expense Tracker</h2>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="ex">Expenses</a>
+            <a href="rev">Revenue</a>
+            <a href="out">Logout</a>
+            <a href="pro"><div class="profile-icon"></div></a>
+        </div>
+    </div>
+
+    <div class="profile-container">
+        <div class="profile-card">
+            <div class="profile-avatar">
+                <span id="profile-initial"></span>
+            </div>
+            <div class="profile-info">
+                <h3 id="user-name">User Name</h3>
+                <p id="user-email">user@example.com</p>
+                <p id="user-location">City, Country</p>
+            </div>
+
+            <div class="edit-form">
+                <input type="text" id="edit-name" placeholder="Edit Name" />
+                <input type="email" id="edit-email" placeholder="Edit Email" />
+                <input type="text" id="edit-location" placeholder="Edit Location" />
+                <button id="save-changes">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load user data from localStorage
+        let user = JSON.parse(localStorage.getItem('user')) || { name: "User Name", email: "user@example.com", location: "City, Country" };
+
+        // Function to display user data
+        function displayUserData() {
+            document.getElementById('profile-initial').textContent = user.name.charAt(0).toUpperCase();
+            document.getElementById('user-name').textContent = user.name;
+            document.getElementById('user-email').textContent = user.email;
+            document.getElementById('user-location').textContent = user.location;
+        }
+
+        // Function to save changes to localStorage
+        function saveChanges() {
+            const newName = document.getElementById('edit-name').value;
+            const newEmail = document.getElementById('edit-email').value;
+            const newLocation = document.getElementById('edit-location').value;
+
+            if (newName && newEmail && newLocation) {
+                user.name = newName;
+                user.email = newEmail;
+                user.location = newLocation;
+                localStorage.setItem('user', JSON.stringify(user));
+                displayUserData();
+                alert('Profile updated successfully!');
+            } else {
+                alert('Please fill in all fields.');
+            }
+        }
+
+        // Add event listener to the save button
+        document.getElementById('save-changes').addEventListener('click', saveChanges);
+
+        // Initial display of user data
+        displayUserData();
+    </script>
+</body>
+</html>

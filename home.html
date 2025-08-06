@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker - Home</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            display: flex; /* Added for sticky footer */
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: #1f3b73;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar .logo {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .navbar .nav-links {
+            display: flex;
+            align-items: center; /* Vertically align items */
+        }
+
+        .navbar .nav-links a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            font-size: 16px;
+        }
+
+        .navbar .nav-links a:hover {
+            text-decoration: underline;
+        }
+
+        .profile-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #4CAF50;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 16px;
+            color: white;
+            margin-left: 20px; /* Add margin to the left of the profile icon */
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 60px 20px;
+            background: url('https://source.unsplash.com/1600x900/?finance,money') no-repeat center center/cover;
+            color: red;
+            height: 60vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .hero h1 {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .hero p {
+            font-size: 18px;
+            max-width: 600px;
+        }
+
+        .hero .cta-btn {
+            margin-top: 20px;
+            padding: 12px 25px;
+            font-size: 18px;
+            color: white;
+            background: #ff6b35;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .hero .cta-btn:hover {
+            background: #e65b2e;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 50px 20px;
+            text-align: center;
+        }
+
+        .features h2 {
+            font-size: 32px;
+            margin-bottom: 20px;
+            color: #1f3b73;
+        }
+
+        .feature-box {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .feature {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 300px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature h3 {
+            margin-top: 10px;
+        }
+
+        /* Footer */
+        .footer {
+            background: #1f3b73;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: auto; /* Push footer to bottom */
+        }
+
+        .footer a {
+            color: #ffcc00;
+            text-decoration: none;
+            margin: 0 10px; /* Add horizontal margin */
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 600px;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            color: #1f3b73;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: #000;
+            text-decoration: none;
+        }
+
+        .modal-body {
+            padding: 10px;
+            line-height: 1.6;
+            color: #555;
+        }
+        .modal-body h3{
+            color: #1f3b73;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .navbar .nav-links {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .navbar .nav-links a {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+            .hero h1 {
+                font-size: 32px;
+            }
+            .hero p {
+                font-size: 16px;
+            }
+            .features {
+                padding: 30px 10px;
+            }
+            .feature {
+                width: 100%;
+            }
+             .modal-content{
+                width: 95%;
+             }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <div class="logo">Expense Tracker</div>
+        <div class="nav-links">
+            <a href="rev">Revenue</a>
+            <a href="ex">Expenses</a>
+            <a href="ov">Overview</a>
+            <a href="out">Logout</a>
+            <a href="pro"><div class="profile-icon"></div></a>
+
+        </div>
+    </div>
+
+    <div class="hero">
+        <h1>Track Your Expenses Effortlessly</h1>
+        <p>Manage your finances, set budgets, and gain insights into your spending habits.</p>
+        <a href="/ex" class="cta-btn">Get Started</a>
+    </div>
+
+    <div class="features">
+        <h2>Why Choose Our Expense Tracker?</h2>
+        <div class="feature-box">
+            <div class="feature">
+                <h3>Simple & Easy</h3>
+                <p>Track your expenses in a user-friendly interface.</p>
+            </div>
+            <div class="feature">
+                <h3>Smart Analytics</h3>
+                <p>Get detailed insights and reports on your spending.</p>
+            </div>
+            <div class="feature">
+                <h3>Secure & Safe</h3>
+                <p>All your financial data is encrypted and protected.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        &copy; 2025 Expense Tracker | <a href="#" id="privacy-policy-link">Privacy Policy</a> | <a href="#" id="contact-us-link">Contact Us</a>
+    </div>
+
+    <div id="privacy-policy-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Privacy Policy</h2>
+            <div class="modal-body">
+                <h3>Introduction</h3>
+                <p>Welcome to our Expense Tracker Application. This Privacy Policy explains how we collect, use, and safeguard your personal information. By using our application, you consent to the practices described in this policy.</p>
+
+                <h3>Information We Collect</h3>
+                <p>We collect the following types of information:</p>
+                <ul>
+                    <li><strong>Personal Information:</strong> When you register an account, we collect your name, email address, and profile picture.</li>
+                    <li><strong>Financial Data:</strong> When you add expenses and revenue, we collect the description, date, amount, and category of each transaction.</li>
+                    <li><strong>Usage Data:</strong> We collect information about how you use our application, including the features you access, the time and duration of your visits, and other usage statistics.</li>
+                    <li><strong>Device Information:</strong> We collect information about the device you use to access our application, including the device type, operating system, and unique device identifiers.</li>
+                </ul>
+
+                <h3>How We Use Your Information</h3>
+                <p>We use your information for the following purposes:</p>
+                <ul>
+                    <li>To provide and maintain our application.</li>
+                    <li>To personalize your experience.</li>
+                    <li>To process your transactions.</li>
+                    <li>To generate reports and analytics.</li>
+                    <li>To communicate with you, including sending you updates, notifications, and promotional materials.</li>
+                    <li>To detect, prevent, and address technical issues, security breaches, and fraud.</li>
+                    <li>To comply with legal obligations.</li>
+                </ul>
+
+                <h3>Data Sharing and Disclosure</h3>
+                <p>We may share your information with the following third parties:</p>
+                <ul>
+                    <li><strong>Service Providers:</strong> We may share your information with third-party service providers who help us to provide and maintain our application, such as hosting providers, payment processors, and analytics providers.</li>
+                    <li><strong>Business Partners:</strong> We may share your information with our business partners to offer you products or services that may be of interest to you.</li>
+                    <li><strong>Legal Authorities:</strong> We may disclose your information to legal authorities if required to do so by law or in response to a valid legal request, such as a subpoena or court order.</li>
+                    <li><strong>Affiliates:</strong> We may share your information with our affiliates, subsidiaries, or parent companies for business purposes.</li>
+                    <li><strong>Business Transfers:</strong> If we are involved in a merger, acquisition, or sale of all or a portion of our assets, your information may be transferred to the acquiring company.</li>
+                </ul>
+
+                <h3>Data Security</h3>
+                <p>We take reasonable measures to protect your information from unauthorized access, use, or disclosure. These measures include:</p>
+                <ul>
+                    <li><strong>Encryption:</strong> We use encryption to protect your data in transit and at rest.</li>
+                    <li><strong>Access Controls:</strong> We implement access controls to restrict access to your information to authorized personnel only.</li>
+                    <li><strong>Regular Security Assessments:</strong> We conduct regular security assessments to identify and address potential vulnerabilities.</li>
+                    <li><strong>Employee Training:</strong> We provide regular training to our employees on data security best practices.</li>
+                </ul>
+
+                <h3>Your Rights</h3>
+                <p>You have the following rights with respect to your personal information:</p>
+                <ul>
+                    <li><strong>Access:</strong> You have the right to access the personal information we hold about you.</li>
+                    <li><strong>Correction:</strong> You have the right to request that we correct any inaccurate or incomplete personal information.</li>
+                    <li><strong>Deletion:</strong> You have the right to request that we delete your personal information.</li>
+                    <li><strong>Objection:</strong> You have the right to object to the processing of your personal information.</li>
+                    <li><strong>Portability:</strong> You have the right to receive your personal information in a portable format.</li>
+                    <li><strong>Withdrawal of Consent:</strong> If we are processing your information based on your consent, you have the right to withdraw your consent at any time.</li>
+                </ul>
+
+                <h3>Data Retention</h3>
+                <p>We will retain your personal information for as long as necessary to provide you with our application and as otherwise necessary to fulfill the purposes outlined in this policy, unless a longer retention period is required or permitted by law.</p>
+
+                <h3>Changes to This Privacy Policy</h3>
+                <p>We may update this Privacy Policy from time to time. If we make material changes, we will notify you by email or by posting a notice on our website. Your continued use of our application after the effective date of the revised policy constitutes your consent to the revised policy.</p>
+
+                <h3>Contact Us</h3>
+                <p>If you have any questions or concerns about this Privacy Policy, please contact us:</p>
+                <ul>
+                    <li><strong>Email:</strong> expensetracker@gmail.com</li>
+                    <li><strong>Address:</strong> Privacy Department, Warangal</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="contact-us-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Contact Us</h2>
+            <div class="modal-body">
+               <h3>Get in Touch</h3>
+                <p>If you have any questions, concerns, or feedback, please contact us using the information below:</p>
+                <ul>
+                    <li><strong>Email:</strong> expensetracker@gmail.com</li>
+                    <li><strong>Phone:</strong> +123 456 7890</li>
+                    <li><strong>Address:</strong> Contact Department, Warangal</li>
+                 </ul>
+                 <h3>Contact Form</h3>
+                 <p>You can also use the form below to send us a message:</p>
+                 <form>
+                    <label for="name">Name:</label><br>
+                    <input type="text" id="name" name="name"><br><br>
+                    <label for="email">Email:</label><br>
+                    <input type="email" id="email" name="email"><br><br>
+                    <label for="message">Message:</label><br>
+                    <textarea id="message" name="message" rows="4" cols="50"></textarea><br><br>
+                    <input type="submit" value="Send Message">
+                 </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get the modal elements
+        const privacyModal = document.getElementById('privacy-policy-modal');
+        const contactModal = document.getElementById('contact-us-modal');
+
+        // Get the link elements
+        const privacyLink = document.getElementById('privacy-policy-link');
+        const contactLink = document.getElementById('contact-us-link');
+
+        // Get the close buttons
+        const closeButtons = document.querySelectorAll('.close-button');
+
+        // Function to open a modal
+        function openModal(modal) {
+            modal.style.display = "block";
+            document.body.style.overflow = 'hidden'; // Prevent scrolling
+        }
+
+        // Function to close a modal
+        function closeModal(modal) {
+            modal.style.display = "none";
+            document.body.style.overflow = 'unset'; // Allow scrolling
+        }
+
+        // Event listeners for the links
+        privacyLink.addEventListener('click', (event) => {
+            event.preventDefault(); // Prevent default link behavior
+            openModal(privacyModal);
+        });
+
+        contactLink.addEventListener('click', (event) => {
+            event.preventDefault(); // Prevent default link behavior
+            openModal(contactModal);
+        });
+
+        // Event listeners for the close buttons
+        closeButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Find the parent modal and close it
+                const modal = button.closest('.modal');
+                if (modal) {
+                    closeModal(modal);
+                }
+            });
+        });
+
+        // Close modal when clicking outside the modal content
+        window.addEventListener('click', (event) => {
+            if (event.target.classList.contains('modal')) {
+                closeModal(event.target);
+            }
+        });
+
+    </script>
+</body>
+</html>
